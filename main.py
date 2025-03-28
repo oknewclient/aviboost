@@ -1,14 +1,19 @@
-from aiogram import Bot, Dispatcher, executor
-from bot_handlers import register_handlers
+import asyncio
 import os
+from aiogram import Bot, Dispatcher
+from aiogram.client.bot import DefaultBotProperties
+from aiogram.enums import ParseMode
+
 from config import load_config
+from bot_handlers import register_handlers
 
-load_config()
+async def main():
+    load_config()
+    bot = Bot(token=os.getenv("BOT_TOKEN"), default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+    dp = Dispatcher()
+    register_handlers(dp)
 
-bot = Bot(token=os.getenv("BOT_TOKEN"))
-dp = Dispatcher(bot)
-
-register_handlers(dp)
+    await dp.start_polling(bot)
 
 if __name__ == "__main__":
-    executor.start_polling(dp, skip_updates=True)
+    asyncio.run(main())
